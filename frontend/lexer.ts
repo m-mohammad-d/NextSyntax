@@ -1,5 +1,5 @@
-
 export enum TokenType {
+  Null,
   Number,
   Identifier,
 
@@ -9,16 +9,16 @@ export enum TokenType {
   Equals,
   OpenParen,
   CloseParen,
-  EOF, 
+  EOF,
 }
-
 
 const KEYWORDS: Record<string, TokenType> = {
   let: TokenType.Let,
+  null: TokenType.Null,
 };
 
 export interface Token {
-  value: string; 
+  value: string;
   type: TokenType;
 }
 
@@ -27,16 +27,13 @@ function token(value = "", type: TokenType): Token {
   return { value, type };
 }
 
-
 function isalpha(src: string) {
   return src.toUpperCase() != src.toLowerCase();
 }
 
-
 function isskippable(str: string) {
   return str == " " || str == "\n" || str == "\t";
 }
-
 
 function isint(str: string) {
   const c = str.charCodeAt(0);
@@ -76,7 +73,6 @@ export function tokenize(sourceCode: string): Token[] {
           num += src.shift();
         }
 
-
         tokens.push(token(num, TokenType.Number));
       } // Handle Identifier & Keyword Tokens.
       else if (isalpha(src[0])) {
@@ -88,7 +84,7 @@ export function tokenize(sourceCode: string): Token[] {
         const reserved = KEYWORDS[ident];
         // If value is not undefined then the identifier is
         // reconized keyword
-        if (reserved) {
+        if (typeof reserved == "number") {
           tokens.push(token(ident, reserved));
         } else {
           // Unreconized name must mean user defined symbol.

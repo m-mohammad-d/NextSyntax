@@ -1,8 +1,8 @@
-
 import {
   BinaryExpr,
   Expr,
   Identifier,
+  NullLiteral,
   NumericLiteral,
   Program,
   Stmt,
@@ -13,11 +13,9 @@ import { Token, tokenize, TokenType } from "./lexer.ts";
 export default class Parser {
   private tokens: Token[] = [];
 
-
   private not_eof(): boolean {
     return this.tokens[0].type != TokenType.EOF;
   }
-
 
   private at() {
     return this.tokens[0] as Token;
@@ -104,7 +102,6 @@ export default class Parser {
     return left;
   }
 
-
   // Parse Literal Values & Grouping Expressions
   private parse_primary_expr(): Expr {
     const tk = this.at().type;
@@ -114,6 +111,9 @@ export default class Parser {
       // User defined values.
       case TokenType.Identifier:
         return { kind: "Identifier", symbol: this.eat().value } as Identifier;
+      case TokenType.Null:
+        this.eat();
+        return { kind: "NullLiteral", value: "null" } as NullLiteral;
 
       // Constants and Numeric Constants
       case TokenType.Number:
