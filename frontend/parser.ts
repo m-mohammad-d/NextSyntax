@@ -1,8 +1,8 @@
+// deno-lint-ignore-file no-explicit-any
 import {
   BinaryExpr,
   Expr,
   Identifier,
-  NullLiteral,
   NumericLiteral,
   Program,
   Stmt,
@@ -17,9 +17,11 @@ export default class Parser {
     return this.tokens[0].type != TokenType.EOF;
   }
 
+
   private at() {
     return this.tokens[0] as Token;
   }
+
 
   private eat() {
     const prev = this.tokens.shift() as Token;
@@ -43,26 +45,21 @@ export default class Parser {
       body: [],
     };
 
-    // Parse until end of file
     while (this.not_eof()) {
       program.body.push(this.parse_stmt());
     }
 
     return program;
   }
-
-  // Handle complex statement types
   private parse_stmt(): Stmt {
-    // skip to parse_expr
     return this.parse_expr();
   }
 
-  // Handle expressions
+
   private parse_expr(): Expr {
     return this.parse_additive_expr();
   }
 
-  // Handle Addition & Subtraction Operations
   private parse_additive_expr(): Expr {
     let left = this.parse_multiplicitave_expr();
 
@@ -102,7 +99,7 @@ export default class Parser {
     return left;
   }
 
-  // Parse Literal Values & Grouping Expressions
+
   private parse_primary_expr(): Expr {
     const tk = this.at().type;
 
@@ -111,9 +108,6 @@ export default class Parser {
       // User defined values.
       case TokenType.Identifier:
         return { kind: "Identifier", symbol: this.eat().value } as Identifier;
-      case TokenType.Null:
-        this.eat();
-        return { kind: "NullLiteral", value: "null" } as NullLiteral;
 
       // Constants and Numeric Constants
       case TokenType.Number:
@@ -124,12 +118,12 @@ export default class Parser {
 
       // Grouping Expressions
       case TokenType.OpenParen: {
-        this.eat(); // eat the opening paren
+        this.eat(); 
         const value = this.parse_expr();
         this.expect(
           TokenType.CloseParen,
           "Unexpected token found inside parenthesised expression. Expected closing parenthesis."
-        );
+        ); 
         return value;
       }
 

@@ -1,14 +1,20 @@
-import { NullVal, NumberVal, RuntimeVal } from "./values.ts";
-import { BinaryExpr, NumericLiteral, Program, Stmt } from "../frontend/ast.ts";
+import { MK_NULL, NumberVal, RuntimeVal } from "./values.ts";
+import {
+  BinaryExpr,
+  Identifier,
+  NumericLiteral,
+  Program,
+  Stmt,
+} from "../frontend/ast.ts";
+import Environment from "./environment.ts";
 
-function eval_program(program: Program): RuntimeVal {
-  let lastEvaluated: RuntimeVal = { type: "null", value: "null" } as NullVal;
+function eval_program(program: Program, env: Environment): RuntimeVal {
+  let lastEvaluated: RuntimeVal = MK_NULL();
   for (const statement of program.body) {
-    lastEvaluated = evaluate(statement);
+    lastEvaluated = evaluate(statement, env);
   }
   return lastEvaluated;
 }
-
 
 function eval_numeric_binary_expr(
   lhs: NumberVal,
@@ -33,9 +39,9 @@ function eval_numeric_binary_expr(
 }
 
 
-function eval_binary_expr(binop: BinaryExpr): RuntimeVal {
-  const lhs = evaluate(binop.left);
-  const rhs = evaluate(binop.right);
+function eval_binary_expr(binop: BinaryExpr, env: Environment): RuntimeVal {
+  const lhs = evaluate(binop.left, env);
+  const rhs = evaluate(binop.right, env);
 
   // Only currently support numeric operations
   if (lhs.type == "number" && rhs.type == "number") {
@@ -46,22 +52,27 @@ function eval_binary_expr(binop: BinaryExpr): RuntimeVal {
     );
   }
 
-  return { type: "null", value: "null" } as NullVal;
+  return MK_NULL();
 }
 
-export function evaluate(astNode: Stmt): RuntimeVal {
+function eval_identifier(ident: Identifier, env: Environment): RuntimeVal {
+  const val = env.lookupVar(ident.symbol);
+  return val;
+}
+
+export function evaluate(astNode: Stmt, env: Environment): RuntimeVal {
   switch (astNode.kind) {
     case "NumericLiteral":
       return {
         value: (astNode as NumericLiteral).value,
         type: "number",
       } as NumberVal;
-    case "NullLiteral":
-      return { value: "null", type: "null" } as NullVal;
+    case "Identifier":
+      return eval_identifier(astNode as Identifier, env);
     case "BinaryExpr":
-      return eval_binary_expr(astNode as BinaryExpr);
+      return eval_binary_expr(astNode as BinaryExpr, env);
     case "Program":
-      return eval_program(astNode as Program);
+      return eval_program(astNode as Program, env);
 
     default:
       console.error(
