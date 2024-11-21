@@ -3,9 +3,11 @@ export enum TokenType {
   Identifier,
 
   Let,
+  Const,
 
   BinaryOperator,
   Equals,
+  Semicolon,
   OpenParen,
   CloseParen,
   EOF,
@@ -13,6 +15,7 @@ export enum TokenType {
 
 const KEYWORDS: Record<string, TokenType> = {
   let: TokenType.Let,
+  const: TokenType.Const,
 };
 
 export interface Token {
@@ -62,6 +65,8 @@ export function tokenize(sourceCode: string): Token[] {
     } // Handle Conditional & Assignment Tokens
     else if (src[0] == "=") {
       tokens.push(token(src.shift(), TokenType.Equals));
+    } else if (src[0] == ";") {
+      tokens.push(token(src.shift(), TokenType.Semicolon));
     } // HANDLE MULTICHARACTER KEYWORDS, TOKENS, IDENTIFIERS ETC...
     else {
       // Handle numeric literals -> Integers
