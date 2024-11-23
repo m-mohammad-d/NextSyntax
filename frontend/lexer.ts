@@ -1,16 +1,22 @@
 export enum TokenType {
+  // Literal Types
   Number,
   Identifier,
-
+  // Keywords
   Let,
   Const,
 
+  // Grouping * Operators
   BinaryOperator,
   Equals,
+  Comma,
+  Colon,
   Semicolon,
-  OpenParen,
-  CloseParen,
-  EOF,
+  OpenParen, // (
+  CloseParen, // )
+  OpenBrace, // {
+  CloseBrace, // }
+  EOF, // Signified the end of file
 }
 
 const KEYWORDS: Record<string, TokenType> = {
@@ -33,7 +39,7 @@ function isalpha(src: string) {
 }
 
 function isskippable(str: string) {
-  return str == " " || str == "\n" || str == "\t";
+  return str == " " || str == "\n" || str == "\t" || str === "\r";
 }
 
 function isint(str: string) {
@@ -41,6 +47,7 @@ function isint(str: string) {
   const bounds = ["0".charCodeAt(0), "9".charCodeAt(0)];
   return c >= bounds[0] && c <= bounds[1];
 }
+
 
 export function tokenize(sourceCode: string): Token[] {
   const tokens = new Array<Token>();
@@ -53,6 +60,10 @@ export function tokenize(sourceCode: string): Token[] {
       tokens.push(token(src.shift(), TokenType.OpenParen));
     } else if (src[0] == ")") {
       tokens.push(token(src.shift(), TokenType.CloseParen));
+    } else if (src[0] == "{") {
+      tokens.push(token(src.shift(), TokenType.OpenBrace));
+    } else if (src[0] == "}") {
+      tokens.push(token(src.shift(), TokenType.CloseBrace));
     } // HANDLE BINARY OPERATORS
     else if (
       src[0] == "+" ||
@@ -67,6 +78,10 @@ export function tokenize(sourceCode: string): Token[] {
       tokens.push(token(src.shift(), TokenType.Equals));
     } else if (src[0] == ";") {
       tokens.push(token(src.shift(), TokenType.Semicolon));
+    } else if (src[0] == ":") {
+      tokens.push(token(src.shift(), TokenType.Colon));
+    } else if (src[0] == ",") {
+      tokens.push(token(src.shift(), TokenType.Comma));
     } // HANDLE MULTICHARACTER KEYWORDS, TOKENS, IDENTIFIERS ETC...
     else {
       // Handle numeric literals -> Integers
@@ -76,6 +91,7 @@ export function tokenize(sourceCode: string): Token[] {
           num += src.shift();
         }
 
+        // append new numeric token.
         tokens.push(token(num, TokenType.Number));
       } // Handle Identifier & Keyword Tokens.
       else if (isalpha(src[0])) {
@@ -84,6 +100,7 @@ export function tokenize(sourceCode: string): Token[] {
           ident += src.shift();
         }
 
+        // CHECK FOR RESERVED KEYWORDS
         const reserved = KEYWORDS[ident];
         // If value is not undefined then the identifier is
         // reconized keyword
@@ -94,6 +111,7 @@ export function tokenize(sourceCode: string): Token[] {
           tokens.push(token(ident, TokenType.Identifier));
         }
       } else if (isskippable(src[0])) {
+        // Skip uneeded chars.
         src.shift();
       } // Handle unreconized characters.
       else {
