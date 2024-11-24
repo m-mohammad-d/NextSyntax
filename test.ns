@@ -9,5 +9,6 @@ const obj = {
   },
 };
 
+print(10 + 100 / x)
 let f = object.complex.bar;
 foo = obj.foo + 5

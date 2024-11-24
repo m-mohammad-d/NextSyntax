@@ -10,12 +10,15 @@ export enum TokenType {
   BinaryOperator,
   Equals,
   Comma,
+  Dot,
   Colon,
   Semicolon,
   OpenParen, // (
   CloseParen, // )
   OpenBrace, // {
   CloseBrace, // }
+  OpenBracket, // [
+  CloseBracket, //]
   EOF, // Signified the end of file
 }
 
@@ -48,7 +51,6 @@ function isint(str: string) {
   return c >= bounds[0] && c <= bounds[1];
 }
 
-
 export function tokenize(sourceCode: string): Token[] {
   const tokens = new Array<Token>();
   const src = sourceCode.split("");
@@ -64,6 +66,12 @@ export function tokenize(sourceCode: string): Token[] {
       tokens.push(token(src.shift(), TokenType.OpenBrace));
     } else if (src[0] == "}") {
       tokens.push(token(src.shift(), TokenType.CloseBrace));
+    } else if (src[0] == "[") {
+      tokens.push(token(src.shift(), TokenType.OpenBracket));
+    } else if (src[0] == "]") {
+      tokens.push(token(src.shift(), TokenType.CloseBracket));
+    } else if (src[0] == ".") {
+      tokens.push(token(src.shift(), TokenType.Dot));
     } // HANDLE BINARY OPERATORS
     else if (
       src[0] == "+" ||
