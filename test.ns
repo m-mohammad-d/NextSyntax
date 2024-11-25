@@ -1,14 +1,7 @@
-let foo = 50 / 2;
 
-const obj = {
-  x: 100,
-  y: 32,
-  foo: foo,
-  complex: {
-    bar: true,
-  },
-};
+let foo = 56;
 
-print(10 + 100 / x)
-let f = object.complex.bar;
-foo = obj.foo + 5
+print(foo , 45)
+
+
+time()
