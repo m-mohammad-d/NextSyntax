@@ -1,9 +1,9 @@
-
 import {
   AssignmentExpr,
   BinaryExpr,
   CallExpr,
   Expr,
+  FunctionDeclaration,
   Identifier,
   MemberExpr,
   NumericLiteral,
@@ -19,22 +19,18 @@ import { Token, tokenize, TokenType } from "./lexer.ts";
 export default class Parser {
   private tokens: Token[] = [];
 
-
   private not_eof(): boolean {
     return this.tokens[0].type != TokenType.EOF;
   }
-
 
   private at() {
     return this.tokens[0] as Token;
   }
 
-
   private eat() {
     const prev = this.tokens.shift() as Token;
     return prev;
   }
-
 
   private expect(type: TokenType, err: any) {
     const prev = this.tokens.shift() as Token;
@@ -68,11 +64,59 @@ export default class Parser {
       case TokenType.Let:
       case TokenType.Const:
         return this.parse_var_declaration();
+      case TokenType.fn:
+        return this.parse_fn_declaration();
       default:
         return this.parse_expr();
     }
   }
+  parse_fn_declaration(): Stmt {
+    this.eat();
+    const name = this.expect(
+      TokenType.Identifier,
+      "Expected function name following fn keyword"
+    ).value;
 
+    const args = this.parse_args();
+    const params: string[] = [];
+
+    for (const arg of args) {
+      if (arg.kind !== "Identifier") {
+        console.log(arg);
+
+        throw "Inside function declaration expected parameters to be of type string.";
+      }
+      params.push((arg as Identifier).symbol);
+    }
+
+    this.expect(
+      TokenType.OpenBrace,
+      "Expected function body following declaration"
+    );
+
+    const body: Stmt[] = [];
+
+    while (
+      this.at().type !== TokenType.EOF &&
+      this.at().type !== TokenType.CloseBrace
+    ) {
+      body.push(this.parse_stmt());
+    }
+
+    this.expect(
+      TokenType.CloseBrace,
+      "Closing brace expected inside function declaration"
+    );
+
+    const fn = {
+      body,
+      name,
+      parameters: params,
+      kind: "FunctionDeclaration",
+    } as FunctionDeclaration;
+
+    return fn;
+  }
 
   parse_var_declaration(): Stmt {
     const isConstant = this.eat().type == TokenType.Const;
@@ -303,7 +347,6 @@ export default class Parser {
 
     return object;
   }
-
 
   // Parse Literal Values & Grouping Expressions
   private parse_primary_expr(): Expr {

@@ -1,7 +1,12 @@
+fn makeAdder (offset) {
 
-let foo = 56;
+  fn add (x, y)  {
+    x + y + offset
+  }
 
-print(foo , 45)
+  add
+}
 
+const adder = makeAdder(1);
 
-time()
+print(adder(10, 5))

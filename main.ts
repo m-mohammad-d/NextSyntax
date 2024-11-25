@@ -1,5 +1,5 @@
 import Parser from "./frontend/parser.ts";
-import  { createGlobalEnv } from "./runtime/environment.ts";
+import { createGlobalEnv } from "./runtime/environment.ts";
 import { evaluate } from "./runtime/interpreter.ts";
 
 // repl();
@@ -13,7 +13,7 @@ async function run(filename: string) {
   const program = parser.produceAST(input);
 
   const result = evaluate(program, env);
-  console.log(result);
+  // console.log(result);
 }
 
 function repl() {
