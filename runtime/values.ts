@@ -35,13 +35,15 @@ export interface NumberVal extends RuntimeVal {
   type: "number";
   value: number;
 }
-export interface stringVal extends RuntimeVal {
-  type: "string";
-  value: String;
-}
-
 export function MK_NUMBER(n = 0) {
   return { type: "number", value: n } as NumberVal;
+}
+export interface stringVal extends RuntimeVal {
+  type: "string";
+  value: string;
+}
+export function MK_STRING(x: string = "") {
+  return { type: "string", value: x } as stringVal;
 }
 
 export interface ObjectVal extends RuntimeVal {

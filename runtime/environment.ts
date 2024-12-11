@@ -3,6 +3,7 @@ import {
   MK_NATIVE_FN,
   MK_NULL,
   MK_NUMBER,
+  MK_STRING,
   RuntimeVal,
 } from "./values.ts";
 
@@ -25,7 +26,14 @@ export function createGlobalEnv() {
     return MK_NUMBER(Date.now());
   }
   env.declareVar("time", MK_NATIVE_FN(timeFunction), true);
+  function getTypeOf(_args: RuntimeVal[], _env: Environment): RuntimeVal {
+    if (_args.length === 0) {
+      throw new Error("getTypeOf function expects at least one argument.");
+    }
+    return MK_STRING(_args[0].type);
+  }
 
+  env.declareVar("getTypeOf", MK_NATIVE_FN(getTypeOf), true);
   return env;
 }
 

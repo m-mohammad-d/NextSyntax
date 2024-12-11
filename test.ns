@@ -1,5 +1,2 @@
-let name = "mohammad";
-
-
-print("name")
-print(name)
+let i = 12;
+print(getTypeOf(12))
