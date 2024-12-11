@@ -7,6 +7,7 @@ export enum TokenType {
   Const,
   While,
   fn,
+  if,
 
   // Grouping * Operators
   BinaryOperator,
@@ -35,6 +36,7 @@ const KEYWORDS: Record<string, TokenType> = {
   const: TokenType.Const,
   fn: TokenType.fn,
   while: TokenType.While,
+  if: TokenType.if,
 };
 
 export interface Token {
@@ -96,8 +98,8 @@ export function tokenize(sourceCode: string): Token[] {
     // Handle Conditional & Assignment Tokens
     else if (src[0] == "=") {
       if (src[1] === "=") {
-        src.shift(); 
-        src.shift(); 
+        src.shift();
+        src.shift();
         tokens.push(token("==", TokenType.EqualEqual));
       } else {
         tokens.push(token(src.shift()!, TokenType.Equals));
@@ -110,24 +112,24 @@ export function tokenize(sourceCode: string): Token[] {
       tokens.push(token(src.shift()!, TokenType.Comma));
     } else if (src[0] == "<") {
       if (src[1] === "=") {
-        src.shift(); 
-        src.shift(); 
+        src.shift();
+        src.shift();
         tokens.push(token("<=", TokenType.LessThanEqual));
       } else {
         tokens.push(token(src.shift()!, TokenType.LessThan));
       }
     } else if (src[0] == ">") {
       if (src[1] === "=") {
-        src.shift(); 
-        src.shift(); 
+        src.shift();
+        src.shift();
         tokens.push(token(">=", TokenType.GreaterThanEqual));
       } else {
         tokens.push(token(src.shift()!, TokenType.GreaterThan));
       }
     } else if (src[0] == "!") {
       if (src[1] === "=") {
-        src.shift(); 
-        src.shift(); 
+        src.shift();
+        src.shift();
         tokens.push(token("!=", TokenType.NotEqual));
       }
     }
@@ -173,7 +175,6 @@ export function tokenize(sourceCode: string): Token[] {
   }
 
   tokens.push({ type: TokenType.EOF, value: "EndOfFile" });
-  console.log(tokens);
 
   return tokens;
 }

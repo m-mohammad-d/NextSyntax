@@ -42,9 +42,11 @@ export function eval_function_declaration(
   return env.declareVar(declaration.name, fn, true);
 }
 
-export function executeWhileStmt(stmt: WhileStmt, env: Environment): RuntimeVal {
+export function executeWhileStmt(
+  stmt: WhileStmt,
+  env: Environment
+): RuntimeVal {
   let conditionVal: RuntimeVal = evaluate(stmt.condition, env);
-
 
   if (conditionVal.type !== "boolean") {
     throw new Error("");
@@ -52,9 +54,8 @@ export function executeWhileStmt(stmt: WhileStmt, env: Environment): RuntimeVal 
 
   while ((conditionVal as BooleanVal).value) {
     for (const s of stmt.body) {
-      evaluate(s, env)
+      evaluate(s, env);
     }
-
 
     conditionVal = evaluate(stmt.condition, env);
     if (conditionVal.type !== "boolean") {
@@ -62,5 +63,25 @@ export function executeWhileStmt(stmt: WhileStmt, env: Environment): RuntimeVal 
     }
   }
 
-  return MK_NULL(); 
+  return MK_NULL();
+}
+export function executeIfStmt(stmt: WhileStmt, env: Environment): RuntimeVal {
+  let conditionVal: RuntimeVal = evaluate(stmt.condition, env);
+
+  if (conditionVal.type !== "boolean") {
+    throw new Error("");
+  }
+
+  if ((conditionVal as BooleanVal).value) {
+    for (const s of stmt.body) {
+      evaluate(s, env);
+    }
+
+    conditionVal = evaluate(stmt.condition, env);
+    if (conditionVal.type !== "boolean") {
+      throw new Error("");
+    }
+  }
+
+  return MK_NULL();
 }

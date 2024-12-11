@@ -17,6 +17,7 @@ import {
   eval_function_declaration,
   eval_program,
   eval_var_declaration,
+  executeIfStmt,
   executeWhileStmt,
 } from "./eval/statements.ts";
 import {
@@ -52,6 +53,8 @@ export function evaluate(astNode: Stmt, env: Environment): RuntimeVal {
       return eval_function_declaration(astNode as FunctionDeclaration, env);
     case "WhileStmt":
       return executeWhileStmt(astNode as WhileStmt, env);
+    case "IfStmt":
+      return executeIfStmt(astNode as WhileStmt, env);
     default:
       console.error(
         "This AST Node has not yet been setup for interpretation.",

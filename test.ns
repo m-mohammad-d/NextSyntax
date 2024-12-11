@@ -1,6 +1,11 @@
-let i = 0;
-
-while(i < 12) {
-print(i < 12)
-i = i+1
+let x = 10;
+let y = 5;
+if (x > y) {
+  while (x < y) {
+    x = x - 1
+    y = y + 1
+  }
 }
+
+print(x)
+print(y)

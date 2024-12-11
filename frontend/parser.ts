@@ -5,6 +5,7 @@ import {
   Expr,
   FunctionDeclaration,
   Identifier,
+  IfStmt,
   MemberExpr,
   NumericLiteral,
   ObjectLiteral,
@@ -68,6 +69,8 @@ export default class Parser {
         return this.parse_fn_declaration();
       case TokenType.While:
         return this.parse_while_stmt();
+      case TokenType.if:
+        return this.parse_if_stmt();
       default:
         return this.parse_expr();
     }
@@ -106,6 +109,41 @@ export default class Parser {
       condition,
       body,
     } as WhileStmt;
+  }
+  private parse_if_stmt(): IfStmt {
+    this.eat();
+    this.expect(
+      TokenType.OpenParen,
+      "Expected opening parenthesis after 'while'"
+    );
+
+    const condition = this.parse_expr();
+
+    this.expect(
+      TokenType.CloseParen,
+      "Expected closing parenthesis after condition"
+    );
+
+    this.expect(
+      TokenType.OpenBrace,
+      "Expected opening brace for the body of the while loop"
+    );
+
+    const body: Stmt[] = [];
+
+    while (this.at().type !== TokenType.CloseBrace) {
+      body.push(this.parse_stmt());
+    }
+    this.expect(
+      TokenType.CloseBrace,
+      "Expected closing brace for the while loop"
+    );
+
+    return {
+      kind: "IfStmt",
+      condition,
+      body,
+    } as IfStmt;
   }
   parse_fn_declaration(): Stmt {
     this.eat();
@@ -258,7 +296,7 @@ export default class Parser {
     return { kind: "ObjectLiteral", properties } as ObjectLiteral;
   }
   private parse_comparison_expr(): Expr {
-    let left = this.parse_additive_expr(); 
+    let left = this.parse_additive_expr();
 
     while (
       this.at().value == "<" ||
@@ -269,7 +307,7 @@ export default class Parser {
       this.at().value == "!="
     ) {
       const operator = this.eat().value;
-      const right = this.parse_additive_expr(); 
+      const right = this.parse_additive_expr();
       left = {
         kind: "BinaryExpr",
         left,
