@@ -8,6 +8,7 @@ export enum TokenType {
   While,
   fn,
   if,
+  Else,
 
   // Grouping * Operators
   BinaryOperator,
@@ -37,6 +38,7 @@ const KEYWORDS: Record<string, TokenType> = {
   fn: TokenType.fn,
   while: TokenType.While,
   if: TokenType.if,
+  else: TokenType.Else,
 };
 
 export interface Token {

@@ -46,7 +46,8 @@ export interface WhileStmt extends Stmt {
 export interface IfStmt extends Stmt {
   kind: "IfStmt";
   condition: Expr;
-  body: Stmt[];
+  ifBody: Stmt[];
+  elseBody: Stmt[];
 }
 
 export interface Expr extends Stmt {}

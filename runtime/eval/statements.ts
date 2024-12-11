@@ -1,5 +1,6 @@
 import {
   FunctionDeclaration,
+  IfStmt,
   Program,
   VarDeclaration,
   WhileStmt,
@@ -65,21 +66,20 @@ export function executeWhileStmt(
 
   return MK_NULL();
 }
-export function executeIfStmt(stmt: WhileStmt, env: Environment): RuntimeVal {
-  let conditionVal: RuntimeVal = evaluate(stmt.condition, env);
+export function executeIfStmt(stmt: IfStmt, env: Environment): RuntimeVal {
+  const conditionVal = evaluate(stmt.condition, env);
 
   if (conditionVal.type !== "boolean") {
-    throw new Error("");
+    throw new Error("Condition must evaluate to a boolean.");
   }
 
   if ((conditionVal as BooleanVal).value) {
-    for (const s of stmt.body) {
+    for (const s of stmt.ifBody) {
       evaluate(s, env);
     }
-
-    conditionVal = evaluate(stmt.condition, env);
-    if (conditionVal.type !== "boolean") {
-      throw new Error("");
+  } else if (stmt.elseBody) {
+    for (const s of stmt.elseBody) {
+      evaluate(s, env);
     }
   }
 

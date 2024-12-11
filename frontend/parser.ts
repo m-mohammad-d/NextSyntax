@@ -111,11 +111,8 @@ export default class Parser {
     } as WhileStmt;
   }
   private parse_if_stmt(): IfStmt {
-    this.eat();
-    this.expect(
-      TokenType.OpenParen,
-      "Expected opening parenthesis after 'while'"
-    );
+    this.eat(); // مصرف توکن 'if'
+    this.expect(TokenType.OpenParen, "Expected opening parenthesis after 'if'");
 
     const condition = this.parse_expr();
 
@@ -126,25 +123,49 @@ export default class Parser {
 
     this.expect(
       TokenType.OpenBrace,
-      "Expected opening brace for the body of the while loop"
+      "Expected opening brace for the body of the 'if' block"
     );
 
-    const body: Stmt[] = [];
+    const ifBody: Stmt[] = [];
 
     while (this.at().type !== TokenType.CloseBrace) {
-      body.push(this.parse_stmt());
+      ifBody.push(this.parse_stmt());
     }
     this.expect(
       TokenType.CloseBrace,
-      "Expected closing brace for the while loop"
+      "Expected closing brace for the 'if' block"
     );
+
+    let elseBody: Stmt[] | null = null;
+
+    // Check if 'else' exists
+    if (this.at().type === TokenType.Else) {
+      this.eat(); // Consume 'else'
+      this.expect(
+        TokenType.OpenBrace,
+        "Expected opening brace for the body of the 'else' block"
+      );
+
+      elseBody = [];
+
+      while (this.at().type !== TokenType.CloseBrace) {
+        elseBody.push(this.parse_stmt());
+      }
+
+      this.expect(
+        TokenType.CloseBrace,
+        "Expected closing brace for the 'else' block"
+      );
+    }
 
     return {
       kind: "IfStmt",
       condition,
-      body,
+      ifBody,
+      elseBody,
     } as IfStmt;
   }
+
   parse_fn_declaration(): Stmt {
     this.eat();
     const name = this.expect(
