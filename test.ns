@@ -1,2 +1,2 @@
 let i = 12;
-print(getTypeOf(12))
+print(12)

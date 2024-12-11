@@ -16,7 +16,14 @@ export function createGlobalEnv() {
   env.declareVar(
     "print",
     MK_NATIVE_FN((args, scope) => {
-      console.log(...args);
+      const arg = args[0];
+      if ("value" in arg) {
+        console.log(arg.value);
+      } else if ("properties" in arg) {
+        console.log(arg.properties);
+      } else {
+        console.error("Argument does not have a value property");
+      }
       return MK_NULL();
     }),
     true
