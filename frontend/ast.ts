@@ -3,6 +3,7 @@ export type NodeType =
   | "Program"
   | "VarDeclaration"
   | "FunctionDeclaration"
+  | "WhileStmt"
   // EXPRESSIONS
   | "AssignmentExpr"
   | "MemberExpr"
@@ -35,6 +36,13 @@ export interface FunctionDeclaration extends Stmt {
   name: string;
   body: Stmt[];
 }
+
+export interface WhileStmt extends Stmt {
+  kind: "WhileStmt";
+  condition: Expr;
+  body: Stmt[];
+}
+
 export interface Expr extends Stmt {}
 
 export interface AssignmentExpr extends Expr {

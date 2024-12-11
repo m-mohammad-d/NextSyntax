@@ -1,12 +1,6 @@
-fn makeAdder (offset) {
+let i = 0;
 
-  fn add (x, y)  {
-    x + y + offset
-  }
-
-  add
+while(i < 12) {
+print(i < 12)
+i = i+1
 }
-
-const adder = makeAdder(1);
-
-print(adder(10, 5))

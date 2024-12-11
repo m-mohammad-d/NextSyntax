@@ -12,6 +12,7 @@ import {
   Property,
   Stmt,
   VarDeclaration,
+  WhileStmt,
 } from "./ast.ts";
 
 import { Token, tokenize, TokenType } from "./lexer.ts";
@@ -59,16 +60,52 @@ export default class Parser {
 
   // Handle complex statement types
   private parse_stmt(): Stmt {
-    // skip to parse_expr
     switch (this.at().type) {
       case TokenType.Let:
       case TokenType.Const:
         return this.parse_var_declaration();
       case TokenType.fn:
         return this.parse_fn_declaration();
+      case TokenType.While:
+        return this.parse_while_stmt();
       default:
         return this.parse_expr();
     }
+  }
+  private parse_while_stmt(): WhileStmt {
+    this.eat();
+    this.expect(
+      TokenType.OpenParen,
+      "Expected opening parenthesis after 'while'"
+    );
+
+    const condition = this.parse_expr();
+
+    this.expect(
+      TokenType.CloseParen,
+      "Expected closing parenthesis after condition"
+    );
+
+    this.expect(
+      TokenType.OpenBrace,
+      "Expected opening brace for the body of the while loop"
+    );
+
+    const body: Stmt[] = [];
+
+    while (this.at().type !== TokenType.CloseBrace) {
+      body.push(this.parse_stmt());
+    }
+    this.expect(
+      TokenType.CloseBrace,
+      "Expected closing brace for the while loop"
+    );
+
+    return {
+      kind: "WhileStmt",
+      condition,
+      body,
+    } as WhileStmt;
   }
   parse_fn_declaration(): Stmt {
     this.eat();
@@ -178,7 +215,7 @@ export default class Parser {
   private parse_object_expr(): Expr {
     // { Prop[] }
     if (this.at().type !== TokenType.OpenBrace) {
-      return this.parse_additive_expr();
+      return this.parse_comparison_expr();
     }
 
     this.eat(); // advance past open brace.
@@ -220,12 +257,40 @@ export default class Parser {
     this.expect(TokenType.CloseBrace, "Object literal missing closing brace.");
     return { kind: "ObjectLiteral", properties } as ObjectLiteral;
   }
+  private parse_comparison_expr(): Expr {
+    let left = this.parse_additive_expr(); 
+
+    while (
+      this.at().value == "<" ||
+      this.at().value == ">" ||
+      this.at().value == "<=" ||
+      this.at().value == ">=" ||
+      this.at().value == "==" ||
+      this.at().value == "!="
+    ) {
+      const operator = this.eat().value;
+      const right = this.parse_additive_expr(); 
+      left = {
+        kind: "BinaryExpr",
+        left,
+        right,
+        operator,
+      } as BinaryExpr;
+    }
+
+    return left;
+  }
 
   // Handle Addition & Subtraction Operations
   private parse_additive_expr(): Expr {
     let left = this.parse_multiplicitave_expr();
 
-    while (this.at().value == "+" || this.at().value == "-") {
+    while (
+      this.at().value == "+" ||
+      this.at().value == "-" ||
+      this.at().value == "<" ||
+      this.at().value == ">"
+    ) {
       const operator = this.eat().value;
       const right = this.parse_multiplicitave_expr();
       left = {

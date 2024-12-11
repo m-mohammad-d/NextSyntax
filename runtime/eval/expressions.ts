@@ -8,7 +8,9 @@ import {
 import Environment from "../environment.ts";
 import { evaluate } from "../interpreter.ts";
 import {
+  BooleanVal,
   FunctionValue,
+  MK_BOOL,
   MK_NULL,
   NativeFnValue,
   NumberVal,
@@ -36,6 +38,30 @@ function eval_numeric_binary_expr(
 
   return { value: result, type: "number" };
 }
+function eval_comparison_binary_expr(
+  lhs: NumberVal,
+  rhs: NumberVal,
+  operator: string
+): BooleanVal {
+  let result: boolean;
+  if (operator == ">") {
+    result = lhs.value > rhs.value;
+  } else if (operator == "<") {
+    result = lhs.value < rhs.value;
+  } else if (operator == ">=") {
+    result = lhs.value >= rhs.value;
+  } else if (operator == "<=") {
+    result = lhs.value <= rhs.value;
+  } else if (operator == "==") {
+    result = lhs.value == rhs.value;
+  } else if (operator == "!=") {
+    result = lhs.value != rhs.value;
+  } else {
+    throw `Unknown comparison operator: ${operator}`;
+  }
+
+  return MK_BOOL(result);
+}
 
 export function eval_binary_expr(
   binop: BinaryExpr,
@@ -45,11 +71,19 @@ export function eval_binary_expr(
   const rhs = evaluate(binop.right, env);
 
   if (lhs.type == "number" && rhs.type == "number") {
-    return eval_numeric_binary_expr(
-      lhs as NumberVal,
-      rhs as NumberVal,
-      binop.operator
-    );
+    if (["+", "-", "*", "/", "%"].includes(binop.operator)) {
+      return eval_numeric_binary_expr(
+        lhs as NumberVal,
+        rhs as NumberVal,
+        binop.operator
+      );
+    } else if ([">", "<", ">=", "<=", "==", "!="].includes(binop.operator)) {
+      return eval_comparison_binary_expr(
+        lhs as NumberVal,
+        rhs as NumberVal,
+        binop.operator
+      );
+    }
   }
 
   return MK_NULL();
