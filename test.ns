@@ -1,5 +1,5 @@
-if (false) {
-  print(12)
-} else {
-  print(13)
-}
+let name = "mohammad";
+
+
+print("name")
+print(name)

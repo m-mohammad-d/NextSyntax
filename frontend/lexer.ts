@@ -1,6 +1,7 @@
 export enum TokenType {
   // Literal Types
   Number,
+  String,
   Identifier,
   // Keywords
   Let,
@@ -16,6 +17,7 @@ export enum TokenType {
   Comma,
   Dot,
   Colon,
+
   Semicolon,
   OpenParen, // (
   CloseParen, // )
@@ -133,6 +135,24 @@ export function tokenize(sourceCode: string): Token[] {
         src.shift();
         src.shift();
         tokens.push(token("!=", TokenType.NotEqual));
+      }
+    }
+
+    // HANDLE STRINGS
+    else if (src[0] === '"' || src[0] === "'") {
+      const quoteType = src.shift()!; // Save the quote type (single or double)
+      let str = "";
+
+      while (src.length > 0 && src[0] !== quoteType) {
+        str += src.shift();
+      }
+
+      if (src[0] === quoteType) {
+        src.shift(); // Consume the closing quote
+        tokens.push(token(str, TokenType.String));
+      } else {
+        console.error("Unterminated string literal");
+        Deno.exit(1);
       }
     }
 

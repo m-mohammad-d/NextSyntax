@@ -12,6 +12,7 @@ import {
   Program,
   Property,
   Stmt,
+  StringLiteral,
   VarDeclaration,
   WhileStmt,
 } from "./ast.ts";
@@ -488,7 +489,11 @@ export default class Parser {
           kind: "NumericLiteral",
           value: parseFloat(this.eat().value),
         } as NumericLiteral;
-
+      case TokenType.String: // فرض می‌کنیم که توکن نوع String در lexer تعریف شده باشد
+        return {
+          kind: "StringLiteral",
+          value: this.eat().value, // مقدار استرینگ از توکن گرفته می‌شود
+        } as StringLiteral;
       // Grouping Expressions
       case TokenType.OpenParen: {
         this.eat(); // eat the opening paren

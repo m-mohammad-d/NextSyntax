@@ -3,6 +3,7 @@ import { Stmt } from "../frontend/ast.ts";
 export type ValueType =
   | "null"
   | "number"
+  | "string"
   | "boolean"
   | "object"
   | "native-fn"
@@ -11,7 +12,6 @@ export type ValueType =
 export interface RuntimeVal {
   type: ValueType;
 }
-
 
 export interface NullVal extends RuntimeVal {
   type: "null";
@@ -31,10 +31,13 @@ export function MK_BOOL(b = true) {
   return { type: "boolean", value: b } as BooleanVal;
 }
 
-
 export interface NumberVal extends RuntimeVal {
   type: "number";
   value: number;
+}
+export interface stringVal extends RuntimeVal {
+  type: "string";
+  value: String;
 }
 
 export function MK_NUMBER(n = 0) {
